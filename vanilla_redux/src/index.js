@@ -4,20 +4,34 @@ const plusbtn = document.querySelector("#add");
 const minusbtn = document.querySelector("#minus");
 const countSpan = document.querySelector("#countNumber");
 
-let count = 0;
+countSpan.innerHTML = 0;
 
-countSpan.innerHTML = count;
+const ADD = "ADD";
+const MINUS = "MINUS";
 
-const updateText = () => {
-  countSpan.innerHTML = count;
+const countModifier = (count = 0, action) => {
+  console.log(action);
+  switch (action.type) {
+    case ADD:
+      return count + 1;
+    case MINUS:
+      return count - 1;
+    default:
+      return count;
+  }
 };
-const handlePlus = () => {
-  count += 1;
-  updateText();
+
+const countStore = createStore(countModifier);
+
+const onChange = () => {
+  console.log("state is changed");
+  countSpan.innerHTML = countStore.getState();
 };
-const handleMinus = () => {
-  count -= 1;
-  updateText();
-};
-plusbtn.addEventListener("click", handlePlus);
-minusbtn.addEventListener("click", handleMinus);
+countStore.subscribe(onChange);
+
+plusbtn.addEventListener("click", () => {
+  countStore.dispatch({ type: ADD });
+});
+minusbtn.addEventListener("click", () => {
+  countStore.dispatch({ type: MINUS });
+});
