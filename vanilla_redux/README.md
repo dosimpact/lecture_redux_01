@@ -176,6 +176,12 @@ todoForm.addEventListener("submit", handleSubmit);
 
 # 5. react-redux
 
+- yarn add
+
+```
+yarn add redux react-redux
+```
+
 - 1. provider : entry App have to be enclosed with <Provider/>
 - 2. use redux store : connect => 1. getState() | 2. dispath()
 - 3. middle func && layer : actionCreators : return {type:..., args...}
@@ -196,3 +202,181 @@ React에서는 immutable한 원칙이 중요하다.
 
 - facebook이 만든 immutable-js를 많이 사용.
 ```
+
+- Tips
+
+```
+useReducer = redux + react-redux
+```
+
+- 1. def store ( same as vanlia JS)
+
+```js
+import { createStore } from "redux";
+
+const ADD_TODO = "ADD_TODO";
+const DEL_TODO = "DEL_TODO";
+
+/**
+ * middle layer : type creator & validate variance
+ */
+const addToDo = (text) => {
+  return {
+    type: ADD_TODO,
+    text,
+  };
+};
+const delToDo = (id) => {
+  return {
+    type: DEL_TODO,
+    id,
+  };
+};
+
+const reducer = (state = [], action) => {
+  switch (action.type) {
+    case ADD_TODO:
+      return [{ text: action.text, id: Date.now() }, ...state];
+    case DEL_TODO:
+      return state.filter((todo) => todo.id !== action.id);
+    default:
+      break;
+  }
+};
+const store = createStore(reducer);
+
+export const actionCreators = {
+  addToDo,
+  delToDo,
+};
+export default store;
+```
+
+- 2. provider : entry App have to be enclosed with <Provider/>
+
+```js
+import { Provider } from "react-redux";
+import store from "./store";
+
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById("root")
+);
+```
+
+- 3. CASE1 : use redux store : connect => 1. getState() | 2. dispath()
+- Todo Home
+
+```js
+import React, { useState } from "react";
+import { actionCreators } from "../store";
+import { connect } from "react-redux";
+
+import Todo from "../components/Todo";
+
+function Home({ toDos, addTodo, ...props }) {
+  const [text, setText] = useState("");
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    addTodo(text);
+    setText("");
+  };
+  return (
+    <div>
+      <h1>TODO LIST</h1>
+      <form onSubmit={onSubmit}>
+        <input
+          type="text"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+        ></input>
+      </form>
+      <ul>
+        {toDos.map((todo) => (
+          <Todo key={todo.id} {...todo} />
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+const mapStateToProps = (state = [], ownProps) => {
+  //   console.log("mapStateToProps", state);
+  //   console.log("mapStateToProps", ownProps);
+  return { toDos: state };
+};
+const mapActionToProps = (dispatch) => {
+  return { addTodo: (text) => dispatch(actionCreators.addToDo(text)) };
+};
+export default connect(mapStateToProps, mapActionToProps)(Home);
+```
+
+- 4. CASE2 : use redux store : connect => 1. getState() | 2. dispath()
+- Todo Element
+
+```js
+import React from "react";
+
+import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import { actionCreators } from "../store";
+
+function Todo({ text, id, delToDo }) {
+  return (
+    <li>
+      <Link to={`/${id}`}>
+        <span id={id}>{text}</span>
+      </Link>
+      <button
+        onClick={() => {
+          delToDo(id);
+        }}
+      >
+        Del
+      </button>
+    </li>
+  );
+}
+const mapActionToProps = (dispatch) => {
+  return {
+    delToDo: (id) => {
+      dispatch(actionCreators.delToDo(id));
+    },
+  };
+};
+export default connect(null, mapActionToProps)(Todo);
+```
+
+- 5. CASE3 : use redux store : connect => 1. getState() | 2. dispath()
+- Todo Detail
+
+```js
+import React from "react";
+import { connect } from "react-redux";
+import { useParams } from "react-router-dom";
+
+function Detail({ todo }) {
+  const { id } = useParams();
+  return (
+    <div>
+      <h1>Detail</h1>
+      <span>{id}</span>
+      <span>{JSON.stringify(todo)}</span>
+    </div>
+  );
+}
+const mapStateToProps = (state = [], ownProps) => {
+  return {
+    todo: state.filter(
+      (todo) => todo.id === parseInt(ownProps?.match?.params?.id)
+    ),
+  };
+};
+
+export default connect(mapStateToProps)(Detail);
+```
+
+# 6.redux toolkit
