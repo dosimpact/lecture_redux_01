@@ -23,7 +23,7 @@ function Todo({ text, id, delToDo }) {
 const mapActionToProps = (dispatch) => {
   return {
     delToDo: (id) => {
-      dispatch(actionCreators.delToDo(id));
+      dispatch(actionCreators.delToDo({ id }));
     },
   };
 };

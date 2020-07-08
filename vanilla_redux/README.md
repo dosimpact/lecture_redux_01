@@ -380,3 +380,13 @@ export default connect(mapStateToProps)(Detail);
 ```
 
 # 6.redux toolkit
+
+- yarn add
+
+```
+yarn add @reduxjs/toolkit
+```
+
+### algorihtm
+
+1. createAction <= def type(enum) + def action creator

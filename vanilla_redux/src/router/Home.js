@@ -37,6 +37,6 @@ const mapStateToProps = (state = [], ownProps) => {
   return { toDos: state };
 };
 const mapActionToProps = (dispatch) => {
-  return { addTodo: (text) => dispatch(actionCreators.addToDo(text)) };
+  return { addTodo: (text) => dispatch(actionCreators.addToDo({ text })) };
 };
 export default connect(mapStateToProps, mapActionToProps)(Home);
