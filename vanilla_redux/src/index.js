@@ -1,37 +1,69 @@
+/**
+ * Practice - pure redux Todo
+ */
+
 import { createStore } from "redux";
 
-const plusbtn = document.querySelector("#add");
-const minusbtn = document.querySelector("#minus");
-const countSpan = document.querySelector("#countNumber");
+const todoForm = document.querySelector("#js_todoform");
+const todoInput = document.querySelector("#js_todoinput");
+const todoList = document.querySelector("#js_todolist");
 
-countSpan.innerHTML = 0;
+/**
+ * action type
+ * ADD_TODO
+ * DEL_TODO
+ */
+const ADD_TODO = "ADD_TODO";
+const DEL_TODO = "DEL_TODO";
 
-const ADD = "ADD";
-const MINUS = "MINUS";
-
-const countModifier = (count = 0, action) => {
-  console.log(action);
+const reducer = (state = [], action) => {
   switch (action.type) {
-    case ADD:
-      return count + 1;
-    case MINUS:
-      return count - 1;
+    case ADD_TODO:
+      return [{ text: action.text, date: Date.now() }, ...state];
+    case DEL_TODO:
+      console.log(DEL_TODO);
+      return state.filter((e) => e.date !== action.id);
     default:
-      return count;
+      return [];
   }
 };
 
-const countStore = createStore(countModifier);
+const store = createStore(reducer);
 
-const onChange = () => {
-  console.log("state is changed");
-  countSpan.innerHTML = countStore.getState();
+const dispath_ADD_TODO = (text) => {
+  return store.dispatch({ type: ADD_TODO, text });
 };
-countStore.subscribe(onChange);
+const dispath_DEL_TODO = (id) => {
+  return store.dispatch({ type: DEL_TODO, id });
+};
 
-plusbtn.addEventListener("click", () => {
-  countStore.dispatch({ type: ADD });
-});
-minusbtn.addEventListener("click", () => {
-  countStore.dispatch({ type: MINUS });
-});
+const updateTodo = () => {
+  console.log(store.getState());
+  const todos = store.getState();
+  todoList.innerHTML = "";
+  todos.forEach((e) => {
+    const li = document.createElement("li");
+    const span = document.createElement("span");
+    const button = document.createElement("button");
+    li.id = e.date;
+    span.innerText = e.text;
+    button.textContent = "DEL";
+    button.addEventListener("click", handleDeleteBtn);
+    li.appendChild(span);
+    li.appendChild(button);
+    todoList.appendChild(li);
+  });
+};
+store.subscribe(updateTodo);
+
+const handleDeleteBtn = (e) => {
+  dispath_DEL_TODO(parseInt(e.target.parentNode.id));
+};
+
+const handleSubmit = (e) => {
+  e.preventDefault();
+  dispath_ADD_TODO(todoInput.value);
+  todoInput.value = "";
+};
+
+todoForm.addEventListener("submit", handleSubmit);
