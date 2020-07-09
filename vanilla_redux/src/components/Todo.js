@@ -17,7 +17,7 @@ export const Todo = ({ date, text, delTodo }) => {
 const mapStateToProps = (state) => ({});
 
 const mapDispatchToProps = (dispath) => ({
-  delTodo: (id) => dispath(actionCreators.action_delTodo(id)),
+  delTodo: (id) => dispath(actionCreators.delToDo(id)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Todo);

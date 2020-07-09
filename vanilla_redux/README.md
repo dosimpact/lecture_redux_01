@@ -389,3 +389,158 @@ yarn add @reduxjs/toolkit
 ### algorihtm
 
 1. createAction <= def type(enum) + def action creator
+2. createReducer <= inital state + def action type resolver (with options immer.js)
+3. createSlice <= def type(enum) + def action creator + reducer
+
+```js
+import { createStore } from "redux";
+import { createAction, createReducer, configureStore } from "@reduxjs/toolkit";
+
+// const ADD_TODO = "ADD_TODO";
+// const DEL_TODO = "DEL_TODO";
+
+// const action_addTodo = (text) => {
+//     return {
+//       type: ADD_TODO,
+//       text,
+//     };
+//   };
+//   const action_delTodo = (id) => {
+//     return {
+//       type: DEL_TODO,
+//       id,
+//     };
+//   };
+/**
+ * createAction <= def type(enum) + def action creator
+ */
+const addToDo = createAction("ADD_TODO");
+const delToDo = createAction("DEL_TODO");
+
+// const reducer = (state = [], action) => {
+//   console.log(action);
+//   switch (action.type) {
+//     case ADD_TODO.type:
+//       return [{ text: action.payload, date: Date.now() }, ...state];
+//     case DEL_TODO.type:
+//       return state.filter((e) => e.date !== action.payload);
+//     default:
+//       break;
+//   }
+// };
+/**
+ * it is okay to mutate when use redux toolkit
+ * two options
+ * 1. state mutate (redux toolkit work in immer)
+ * 2. return now state
+ */
+const reducer = createReducer([], {
+  [addToDo]: (state, action) => {
+    state.push({ text: action.payload, date: Date.now() });
+  },
+  [delToDo]: (state, action) => {
+    return state.filter((e) => e.date !== parseInt(action.payload));
+  },
+});
+
+const store = configureStore({ reducer });
+
+export const actionCreators = {
+  addToDo,
+  delToDo,
+};
+
+export default store;
+```
+
+```js
+import { configureStore, createSlice } from "@reduxjs/toolkit";
+
+const toDos = createSlice({
+  name: "toDosReducer",
+  initialState: [],
+  reducers: {
+    addToDo: (state, action) => {
+      state.push({ text: action.payload, date: Date.now() });
+    },
+    delToDo: (state, action) =>
+      state.filter((e) => e.date !== parseInt(action.payload)),
+  },
+});
+
+export const actionCreators = {
+  ...toDos.actions,
+};
+
+export default configureStore({ reducer: toDos.reducer });
+```
+
+# More. Study - slice status
+
+[https://redux-toolkit.js.org/api/createSlice](https://redux-toolkit.js.org/api/createSlice)
+
+```js
+import { createSlice, createAction, PayloadAction } from '@reduxjs/toolkit'
+import { createStore, combineReducers } from 'redux'
+
+const incrementBy = createAction<number>('incrementBy')
+const decrementBy = createAction<number>('decrementBy')
+
+const counter = createSlice({
+  name: 'counter',
+  initialState: 0 as number,
+  reducers: {
+    increment: state => state + 1,
+    decrement: state => state - 1,
+    multiply: {
+      reducer: (state, action: PayloadAction<number>) => state * action.payload,
+      prepare: (value: number) => ({ payload: value || 2 }) // fallback if the payload is a falsy value
+    }
+  },
+  // "builder callback API", recommended for TypeScript users
+  extraReducers: builder => {
+    builder.addCase(incrementBy, (state, action) => {
+      return state + action.payload
+    })
+    builder.addCase(decrementBy, (state, action) => {
+      return state - action.payload
+    })
+  }
+})
+
+const user = createSlice({
+  name: 'user',
+  initialState: { name: '', age: 20 },
+  reducers: {
+    setUserName: (state, action) => {
+      state.name = action.payload // mutate the state all you want with immer
+    }
+  },
+  // "map object API"
+  extraReducers: {
+    [counter.actions.increment]: (state, action) => {
+      state.age += 1
+    }
+  }
+})
+
+const reducer = combineReducers({
+  counter: counter.reducer,
+  user: user.reducer
+})
+
+const store = createStore(reducer)
+
+store.dispatch(counter.actions.increment())
+// -> { counter: 1, user: {name : '', age: 21} }
+store.dispatch(counter.actions.increment())
+// -> { counter: 2, user: {name: '', age: 22} }
+store.dispatch(counter.actions.multiply(3))
+// -> { counter: 6, user: {name: '', age: 22} }
+store.dispatch(counter.actions.multiply())
+// -> { counter: 12, user: {name: '', age: 22} }
+console.log(`${counter.actions.decrement}`)
+// -> "counter/decrement"
+store.dispatch(user.actions.setUserName('eric'))
+// -> { counter: 6, user: { name: 'eric', age: 22} }
+```

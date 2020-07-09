@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import { connect } from "react-redux";
 
 export const Detail = ({ todo, ...props }) => {
@@ -12,7 +12,7 @@ export const Detail = ({ todo, ...props }) => {
   );
 };
 
-const mapStateToProps = (state = [], ownProps) => ({
+const mapStateToProps = (state, ownProps) => ({
   todo: state.filter((e) => e.date === parseInt(ownProps?.match?.params?.id)),
 });
 

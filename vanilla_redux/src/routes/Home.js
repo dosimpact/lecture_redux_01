@@ -30,12 +30,12 @@ export const Home = ({ todos, addTodo, ...props }) => {
   );
 };
 
-const mapStateToProps = (state = []) => ({
+const mapStateToProps = (state) => ({
   todos: state,
 });
 
 const mapDispatchToProps = (dispath) => ({
-  addTodo: (text) => dispath(actionCreators.action_addTodo(text)),
+  addTodo: (text) => dispath(actionCreators.addToDo(text)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
