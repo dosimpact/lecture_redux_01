@@ -1,30 +1,23 @@
 import React from "react";
-
-import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { actionCreators } from "../store";
+import { Link } from "react-router-dom";
 
-function Todo({ text, id, delToDo }) {
+export const Todo = ({ date, text, delTodo }) => {
   return (
     <li>
-      <Link to={`/${id}`}>
-        <span id={id}>{text}</span>
+      <Link to={`/${date}`}>
+        <span>{text}</span>
       </Link>
-      <button
-        onClick={() => {
-          delToDo(id);
-        }}
-      >
-        Del
-      </button>
+      <button onClick={() => delTodo(date)}>DEL</button>
     </li>
   );
-}
-const mapActionToProps = (dispatch) => {
-  return {
-    delToDo: (id) => {
-      dispatch(actionCreators.delToDo({ id }));
-    },
-  };
 };
-export default connect(null, mapActionToProps)(Todo);
+
+const mapStateToProps = (state) => ({});
+
+const mapDispatchToProps = (dispath) => ({
+  delTodo: (id) => dispath(actionCreators.action_delTodo(id)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Todo);

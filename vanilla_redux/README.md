@@ -55,7 +55,6 @@ countSpan.innerHTML = 0;
 
 const ADD = "ADD";
 const MINUS = "MINUS";
-
 const countModifier = (count = 0, action) => {
   // console.log(action);
   switch (action.type) {
