@@ -1,41 +1,27 @@
 import React, { useState } from "react";
-import { connect } from "react-redux";
-import { actionCreators } from "../store";
-import Todo from "../components/Todo";
 
-export const Home = ({ todos, addTodo, ...props }) => {
-  const [text, setText] = useState("");
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    addTodo(text);
-    setText("");
-  };
+import { actionCreator } from "../store";
+
+import { connect } from "react-redux";
+
+export const Home = ({ counter, countUp, countDown }) => {
   return (
-    <>
-      <h1>TODO LIST</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          value={text}
-          onChange={(e) => {
-            setText(e.target.value);
-          }}
-        ></input>
-      </form>
-      <ul>
-        {todos.map((e) => (
-          <Todo key={e.date} {...e} />
-        ))}
-      </ul>
-    </>
+    <div>
+      <h1>counter</h1>
+      <span>{counter}</span>
+      <button onClick={countUp}>UP</button>
+      <button onClick={countDown}>DOWN</button>
+    </div>
   );
 };
 
-const mapStateToProps = (state) => ({
-  todos: state,
-});
+const mapStateToProps = (state) => ({ counter: state.counter });
 
-const mapDispatchToProps = (dispath) => ({
-  addTodo: (text) => dispath(actionCreators.addToDo(text)),
-});
+const mapDispatchToProps = (dispath) => {
+  return {
+    countUp: () => dispath(actionCreator.addCount()),
+    countDown: () => dispath(actionCreator.subCount()),
+  };
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
