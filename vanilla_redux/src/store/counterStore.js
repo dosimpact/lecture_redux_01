@@ -1,5 +1,4 @@
-import { createSlice, createAction } from "@reduxjs/toolkit";
-import { createStore, combineReducers } from "redux";
+import { createSlice } from "@reduxjs/toolkit";
 
 const saveCounter = (count) => {
   localStorage.setItem("counter", String(count));
@@ -20,13 +19,4 @@ const counter = createSlice({
   },
 });
 
-const reducer = combineReducers({
-  counter: counter.reducer,
-});
-
-export const actionCreator = {
-  ...counter.actions,
-};
-const store = createStore(reducer);
-
-export default store;
+export default counter;
