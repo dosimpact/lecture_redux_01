@@ -15,7 +15,10 @@ export const Home = ({ counter, countUp, countDown }) => {
   );
 };
 
-const mapStateToProps = (state) => ({ counter: state.counter });
+const mapStateToProps = (state) => {
+  console.log(state);
+  return { counter: state.counter };
+};
 
 const mapDispatchToProps = (dispath) => {
   return {

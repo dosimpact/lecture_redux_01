@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 
 import Home from "./Routes/Home";
+import Todo from "./Routes/Todo";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <Router>
         <Switch>
           <Route exact path="/" component={Home} />
+          <Route path="/todo" component={Todo} />
           <Redirect from="*" to="/" />
         </Switch>
       </Router>
