@@ -1,18 +1,25 @@
 import { createSlice, createAction } from "@reduxjs/toolkit";
 import { createStore, combineReducers } from "redux";
 
+const saveCounter = (count) => {
+  localStorage.setItem("counter", String(count));
+};
+
 const counter = createSlice({
   name: "counter",
-  initialState: localStorage.getItem("counter") || 0,
+  initialState: Number(localStorage.getItem("counter") || 0),
   reducers: {
     addCount: (state, action) => {
+      saveCounter(state + 1);
       return state + 1;
     },
     subCount: (state, action) => {
+      saveCounter(state - 1);
       return state - 1;
     },
   },
 });
+
 const reducer = combineReducers({
   counter: counter.reducer,
 });
